@@ -8,7 +8,6 @@ import Test.Hspec.Wai
 import Test.Hspec.Wai.JSON
 
 import Lib (app)
-import Utils ( toSnakeCase )
 
 import qualified Utils
 
@@ -35,9 +34,10 @@ utilsSpec = parallel $ do
             let a = "firstName"
             Utils.stripPrefix "user" a `shouldBe` a
     describe "toSnakeCase" $ do
-        it "should return the camel cased version of the string" $ do
-            let a = "firstName"
-            toSnakeCase a `shouldBe` "first_name"
-        it "should not contain a prefixed underscore when starting with upper case" $ do
-            let a = "FirstName"
-            toSnakeCase a `shouldBe` "first_name"
+        it "should return the camel cased version of the string" $
+            Utils.toSnakeCase "firstName" `shouldBe` "first_name"
+        it "should not contain a prefixed underscore when starting with upper case" $
+            Utils.toSnakeCase "FirstName" `shouldBe` "first_name"
+    describe "formatJsonField" $
+        it "should return snake cased string without the given prefix" $
+            Utils.formatJsonField "user" "userFirstName" `shouldBe` "first_name"
