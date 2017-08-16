@@ -1,6 +1,7 @@
 {-# LANGUAGE DataKinds       #-}
 {-# LANGUAGE TemplateHaskell #-}
 {-# LANGUAGE TypeOperators   #-}
+
 module Lib
     ( startApp
     , app
@@ -12,13 +13,17 @@ import Network.Wai
 import Network.Wai.Handler.Warp
 import Servant
 
+import Utils ( toSnakeCase )
+
+import qualified Utils
+
 data User = User
-  { userId        :: Int
+  { userId        :: Integer
   , userFirstName :: String
   , userLastName  :: String
   } deriving (Eq, Show)
 
-$(deriveJSON defaultOptions ''User)
+$(deriveJSON defaultOptions { fieldLabelModifier = toSnakeCase . Utils.stripPrefix "user"} ''User)
 
 type API = "users" :> Get '[JSON] [User]
 
