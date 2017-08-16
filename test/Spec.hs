@@ -21,7 +21,7 @@ spec = with (return app) $
         it "responds with 200" $
             get "/users" `shouldRespondWith` 200
         it "responds with [User]" $ do
-            let users = "[{\"userId\":1,\"userFirstName\":\"Isaac\",\"userLastName\":\"Newton\"},{\"userId\":2,\"userFirstName\":\"Albert\",\"userLastName\":\"Einstein\"}]"
+            let users = "[{\"id\":1,\"first_name\":\"Isaac\",\"last_name\":\"Newton\"},{\"id\":2,\"first_name\":\"Albert\",\"last_name\":\"Einstein\"}]"
             get "/users" `shouldRespondWith` users
 
 utilsSpec :: Spec
