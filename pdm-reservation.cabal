@@ -1,0 +1,49 @@
+name:                pdm-reservation
+version:             0.1.0
+-- synopsis:
+-- description:
+homepage:            https://github.com/AntoineGagne/pdm-reservation#readme
+license:             BSD3
+license-file:        LICENSE
+author:              Author name here
+maintainer:          antoine.gagne.2@ulaval.ca
+copyright:           2017 Antoine Gagné
+category:            Web
+build-type:          Simple
+extra-source-files:  README.md
+cabal-version:       >=1.10
+
+library
+  hs-source-dirs:      src
+  exposed-modules:     Lib
+  build-depends:       base >= 4.7 && < 5
+                     , aeson
+                     , servant-server
+                     , wai
+                     , warp
+  default-language:    Haskell2010
+
+executable pdm-reservation-exe
+  hs-source-dirs:      app
+  main-is:             Main.hs
+  ghc-options:         -threaded -rtsopts -with-rtsopts=-N
+  build-depends:       base
+                     , pdm-reservation
+  default-language:    Haskell2010
+
+test-suite pdm-reservation-test
+  type:                exitcode-stdio-1.0
+  hs-source-dirs:      test
+  main-is:             Spec.hs
+  build-depends:       base
+                     , pdm-reservation
+                     , hspec
+                     , hspec-wai
+                     , hspec-wai-json
+                     , aeson
+  ghc-options:         -threaded -rtsopts -with-rtsopts=-N
+  default-language:    Haskell2010
+
+source-repository head
+  type:     git
+  location: https://github.com/AntoineGagne/pdm-reservation
