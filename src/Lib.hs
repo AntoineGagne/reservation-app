@@ -13,7 +13,11 @@ import Network.Wai
 import Network.Wai.Handler.Warp
 import Servant
 
+import Calendar ( Calendar
+                , Reservation
+                )
 import Utils ( formatJsonField )
+
 
 data User = User
   { userId        :: Integer
@@ -24,6 +28,17 @@ data User = User
 $(deriveJSON defaultOptions { fieldLabelModifier = formatJsonField "user" } ''User)
 
 type API = "users" :> Get '[JSON] [User]
+
+type UserRoutes
+    = "users" :> Capture "userid" :> Get '[JSON] User
+
+type CalendarRoutes
+    = Get '[JSON] [Calendar]
+  :<|> Capture "calendarid" Integer :> Get '[JSON] Calendar
+  :<|> PostCreated '[JSON] [Calendar]
+  :<|> Capture "calendarid" Integer :> Put '[JSON] Calendar
+  :<|> Delete '[JSON] [Calendar]
+  :<|> Capture "calendarid" Integer :> Delete '[JSON] Calendar
 
 startApp :: IO ()
 startApp = run 8080 app
