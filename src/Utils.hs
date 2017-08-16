@@ -1,5 +1,6 @@
 module Utils
-    ( stripPrefix
+    ( formatJsonField
+    , stripPrefix
     , toSnakeCase
     ) where
 
@@ -8,6 +9,9 @@ import Data.Char ( isUpper
                  )
 import Data.Maybe ( fromMaybe )
 import qualified Data.List as List
+
+formatJsonField :: String -> String -> String
+formatJsonField p = toSnakeCase . stripPrefix p
 
 toSnakeCase :: String -> String
 toSnakeCase s = case concatMap f s of

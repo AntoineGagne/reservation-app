@@ -5,8 +5,12 @@ module Calendar
     ) where
 
 import Data.Aeson ( defaultOptions )
-import Data.Aeson.TH ( deriveJSON )
+import Data.Aeson.TH ( deriveJSON
+                     , Options (..)
+                     )
 import Data.Text ( Text )
+
+import Utils ( formatJsonField )
 
 
 data Calendar = Calendar
@@ -15,4 +19,4 @@ data Calendar = Calendar
     , calendarOwner :: Integer
     } deriving (Eq, Show)
 
-$(deriveJSON defaultOptions ''Calendar)
+$(deriveJSON defaultOptions { fieldLabelModifier = formatJsonField "calendar" } ''Calendar)

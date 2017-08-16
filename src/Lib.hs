@@ -13,9 +13,7 @@ import Network.Wai
 import Network.Wai.Handler.Warp
 import Servant
 
-import Utils ( toSnakeCase )
-
-import qualified Utils
+import Utils ( formatJsonField )
 
 data User = User
   { userId        :: Integer
@@ -23,7 +21,7 @@ data User = User
   , userLastName  :: String
   } deriving (Eq, Show)
 
-$(deriveJSON defaultOptions { fieldLabelModifier = toSnakeCase . Utils.stripPrefix "user"} ''User)
+$(deriveJSON defaultOptions { fieldLabelModifier = formatJsonField "user" } ''User)
 
 type API = "users" :> Get '[JSON] [User]
 
