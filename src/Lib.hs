@@ -28,23 +28,28 @@ type UserRoutes
     = "users" :> Capture "userid" :> Get '[JSON] User
 
 type CalendarRoutes
-    = Get '[JSON] [Calendar]
-  :<|> ReqBody '[JSON] Calendar :> PostCreated '[JSON] [Calendar]
-  :<|> Delete '[JSON] [Calendar]
-  :<|> Capture "calendarid" Integer :> (    Get '[JSON] Calendar
-                                       :<|> ReqBody '[JSON] Calendar :> Put '[JSON] Calendar
-                                       :<|> Delete '[JSON] Calendar
-                                       )
+    = "calendars" :> (    Get '[JSON] [Calendar]
+                     :<|> ReqBody '[JSON] Calendar :> PostCreated '[JSON] [Calendar]
+                     :<|> Delete '[JSON] [Calendar]
+                     :<|> Capture "calendarid" Integer :>
+                         (    Get '[JSON] Calendar
+                         :<|> ReqBody '[JSON] Calendar :> Put '[JSON] Calendar
+                         :<|> Delete '[JSON] Calendar
+                         :<|> ReservationRoutes
+                         )
+                     )
 
 type ReservationRoutes
-    = QueryParam "min-time" UTCTime :> QueryParam "max-time" UTCTime 
-                                    :> QueryParam "sortby" SortReservationBy
-                                    :> Get '[JSON] [Reservation]
-  :<|> ReqBody '[JSON] Reservation :> PostCreated '[JSON] [Reservation]
-  :<|> Capture "reservationid" Integer :> (    Get '[JSON] Reservation
-                                          :<|> ReqBody '[JSON] Reservation :> Put '[JSON] Reservation
-                                          :<|> Delete '[JSON] Reservation
-                                          )
+    = "reservation" :> ( QueryParam "min-time" UTCTime :> QueryParam "max-time" UTCTime 
+                                                       :> QueryParam "sortby" SortReservationBy
+                                                       :> Get '[JSON] [Reservation]
+                       :<|> ReqBody '[JSON] Reservation :> PostCreated '[JSON] [Reservation]
+                       :<|> Capture "reservationid" Integer :>
+                           (    Get '[JSON] Reservation
+                           :<|> ReqBody '[JSON] Reservation :> Put '[JSON] Reservation
+                           :<|> Delete '[JSON] Reservation
+                           )
+                       )
 
 startApp :: IO ()
 startApp = run 8080 app
