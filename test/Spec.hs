@@ -24,6 +24,12 @@ spec = with (return app) $
             let users = "[{\"id\":1,\"first_name\":\"Isaac\",\"last_name\":\"Newton\"},{\"id\":2,\"first_name\":\"Albert\",\"last_name\":\"Einstein\"}]"
             get "/users" `shouldRespondWith` users
 
+calendarRoutesSpec :: Spec
+calendarRoutesSpec = undefined
+
+reservationRoutesSpec :: Spec
+reservationRoutesSpec = undefined
+
 utilsSpec :: Spec
 utilsSpec = parallel $ do
     describe "stripPrefix" $ do

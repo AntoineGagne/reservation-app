@@ -24,10 +24,10 @@ import Utils ( formatJsonField )
 
 type API = "users" :> Get '[JSON] [User]
 
-type UserRoutes
+type UserEndpoint
     = "users" :> Capture "userid" :> Get '[JSON] User
 
-type CalendarRoutes
+type CalendarEndpoint
     = "calendars" :> (    Get '[JSON] [Calendar]
                      :<|> ReqBody '[JSON] Calendar :> PostCreated '[JSON] [Calendar]
                      :<|> Delete '[JSON] [Calendar]
@@ -35,11 +35,11 @@ type CalendarRoutes
                          (    Get '[JSON] Calendar
                          :<|> ReqBody '[JSON] Calendar :> Put '[JSON] Calendar
                          :<|> Delete '[JSON] Calendar
-                         :<|> ReservationRoutes
+                         :<|> ReservationEndpoint
                          )
                      )
 
-type ReservationRoutes
+type ReservationEndpoint
     = "reservation" :> ( QueryParam "min-time" UTCTime :> QueryParam "max-time" UTCTime 
                                                        :> QueryParam "sortby" SortReservationBy
                                                        :> Get '[JSON] [Reservation]
@@ -62,6 +62,15 @@ api = Proxy
 
 server :: Server API
 server = return users
+
+calendarServer :: Server CalendarEndpoint
+calendarServer = undefined
+
+reservationServer :: Server ReservationEndpoint
+reservationServer = undefined
+
+userServer :: Server UserEndpoint
+userServer = undefined
 
 users :: [User]
 users = [ User 1 "Isaac" "Newton"
