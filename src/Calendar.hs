@@ -12,6 +12,7 @@ import Data.Aeson.TH ( deriveJSON
 import Data.Text ( Text )
 import Data.Time ( UTCTime )
 
+import User ( User (..) )
 import Utils ( formatJsonField )
 
 
@@ -19,6 +20,7 @@ data Calendar = Calendar
     { calendarId :: Integer
     , calendarName :: Text
     , calendarDescription :: Maybe Text
+    , calendarOwner :: User
     } deriving (Eq, Show)
 $(deriveJSON defaultOptions { fieldLabelModifier = formatJsonField "calendar" } ''Calendar)
 
