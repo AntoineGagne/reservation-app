@@ -16,6 +16,7 @@ import Servant
 
 import Calendar ( Calendar
                 , Reservation
+                , SortReservationBy
                 )
 import User ( User (..) )
 import Utils ( formatJsonField )
@@ -36,7 +37,9 @@ type CalendarRoutes
                                        )
 
 type ReservationRoutes
-    = QueryParam "min-time" UTCTime :> QueryParam "max-time" UTCTime :> Get '[JSON] [Reservation]
+    = QueryParam "min-time" UTCTime :> QueryParam "max-time" UTCTime 
+                                    :> QueryParam "sortby" SortReservationBy
+                                    :> Get '[JSON] [Reservation]
   :<|> ReqBody '[JSON] Reservation :> PostCreated '[JSON] [Reservation]
   :<|> Capture "reservationid" Integer :> (    Get '[JSON] Reservation
                                           :<|> ReqBody '[JSON] Reservation :> Put '[JSON] Reservation

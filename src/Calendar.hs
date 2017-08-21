@@ -3,6 +3,7 @@
 module Calendar
     ( Calendar (..)
     , Reservation (..)
+    , SortReservationBy (..)
     ) where
 
 import Data.Aeson ( defaultOptions )
@@ -35,3 +36,7 @@ data Reservation = Reservation
     , reservationPayingCustomersNumber :: Integer
     } deriving (Eq, Show)
 $(deriveJSON defaultOptions { fieldLabelModifier = formatJsonField "reservation" } ''Reservation)
+
+data SortReservationBy = Month
+                       | Week
+                       | Year
