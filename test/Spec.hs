@@ -1,4 +1,3 @@
-{-# LANGUAGE QuasiQuotes #-}
 {-# LANGUAGE OverloadedStrings #-}
 
 module Main (main) where
@@ -16,12 +15,12 @@ main :: IO ()
 main = mapM_ hspec [utilsSpec, spec]
 
 spec :: Spec
-spec = with (return app) $
+spec = with (return app) $ parallel $
     describe "GET /users" $ do
         it "responds with 200" $
             get "/users" `shouldRespondWith` 200
         it "responds with [User]" $ do
-            let users = "[{\"id\":1,\"first_name\":\"Isaac\",\"last_name\":\"Newton\"},{\"id\":2,\"first_name\":\"Albert\",\"last_name\":\"Einstein\"}]"
+            let users = "[{\"first_name\":\"Isaac\",\"last_name\":\"Newton\",\"email\":\"isaac.newton@physicist.org\"},{\"first_name\":\"Albert\",\"last_name\":\"Einstein\",\"email\":\"albert.einstein@physicist.org\"}]"
             get "/users" `shouldRespondWith` users
 
 calendarRoutesSpec :: Spec
@@ -33,17 +32,17 @@ reservationRoutesSpec = undefined
 utilsSpec :: Spec
 utilsSpec = parallel $ do
     describe "stripPrefix" $ do
-        it "should strip the prefix when it is present" $ do
+        it "strips the prefix when it is present" $ do
             let a = "userFirstName"
             Utils.stripPrefix "user" a `shouldNotContain` "user"
-        it "should return the same string when the prefix is not present" $ do
+        it "returns the same string when the prefix is not present" $ do
             let a = "firstName"
             Utils.stripPrefix "user" a `shouldBe` a
     describe "toSnakeCase" $ do
-        it "should return the camel cased version of the string" $
+        it "returns the camel cased version of the string" $
             Utils.toSnakeCase "firstName" `shouldBe` "first_name"
-        it "should not contain a prefixed underscore when starting with upper case" $
+        it "does not contain a prefixed underscore when starting with upper case" $
             Utils.toSnakeCase "FirstName" `shouldBe` "first_name"
     describe "formatJsonField" $
-        it "should return snake cased string without the given prefix" $
+        it "returns snake cased string without the given prefix" $
             Utils.formatJsonField "user" "userFirstName" `shouldBe` "first_name"
