@@ -9,16 +9,19 @@ module Lib
 
 import Data.Aeson
 import Data.Aeson.TH
+import Database.Persist.Sql ( ConnectionPool
+                            , runSqlPersistMPool
+                            )
 import Data.Time ( UTCTime )
 import Network.Wai
 import Network.Wai.Handler.Warp
 import Servant
 
-import Calendar ( Calendar
-                , Reservation
-                , SortReservationBy
-                )
-import User ( User (..) )
+import Model ( Calendar
+             , Reservation
+             , SortReservationBy
+             , User (..)
+             )
 import Utils ( formatJsonField )
 
 
@@ -32,7 +35,7 @@ type CalendarEndpoint
                      :<|> ReqBody '[JSON] Calendar :> PostCreated '[JSON] [Calendar]
                      :<|> Delete '[JSON] [Calendar]
                      :<|> Capture "calendarid" Integer :>
-                         (    Get '[JSON] Calendar
+                         (    Get '[JSON] (Maybe Calendar)
                          :<|> ReqBody '[JSON] Calendar :> Put '[JSON] Calendar
                          :<|> Delete '[JSON] Calendar
                          :<|> ReservationEndpoint
@@ -45,7 +48,7 @@ type ReservationEndpoint
                                                        :> Get '[JSON] [Reservation]
                        :<|> ReqBody '[JSON] Reservation :> PostCreated '[JSON] [Reservation]
                        :<|> Capture "reservationid" Integer :>
-                           (    Get '[JSON] Reservation
+                           (    Get '[JSON] (Maybe Reservation)
                            :<|> ReqBody '[JSON] Reservation :> Put '[JSON] Reservation
                            :<|> Delete '[JSON] Reservation
                            )
@@ -63,16 +66,19 @@ api = Proxy
 server :: Server API
 server = return users
 
-calendarServer :: Server CalendarEndpoint
-calendarServer = undefined
+calendarServer :: ConnectionPool ->  Server CalendarEndpoint
+calendarServer pool = undefined
+    where
+        getCalendars :: IO [User]
+        getCalendars = undefined
 
-reservationServer :: Server ReservationEndpoint
+reservationServer :: ConnectionPool -> Server ReservationEndpoint
 reservationServer = undefined
 
-userServer :: Server UserEndpoint
+userServer :: ConnectionPool -> Server UserEndpoint
 userServer = undefined
 
 users :: [User]
-users = [ User 1 "Isaac" "Newton"
-        , User 2 "Albert" "Einstein"
+users = [ User "Isaac" "Newton" "isaac.newton@physicist.org"
+        , User "Albert" "Einstein" "albert.einstein@physicist.org"
         ]
