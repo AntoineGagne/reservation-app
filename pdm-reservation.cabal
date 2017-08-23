@@ -23,6 +23,7 @@ library
                      , aeson
                      , persistent
                      , persistent-template
+                     , mtl
                      , servant-server
                      , text
                      , time

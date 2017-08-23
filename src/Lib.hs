@@ -66,16 +66,16 @@ api = Proxy
 server :: Server API
 server = return users
 
-calendarServer :: ConnectionPool ->  Server CalendarEndpoint
-calendarServer pool = undefined
+calendarServer :: Server CalendarEndpoint
+calendarServer = undefined
     where
         getCalendars :: IO [User]
         getCalendars = undefined
 
-reservationServer :: ConnectionPool -> Server ReservationEndpoint
+reservationServer :: Server ReservationEndpoint
 reservationServer = undefined
 
-userServer :: ConnectionPool -> Server UserEndpoint
+userServer :: Server UserEndpoint
 userServer = undefined
 
 users :: [User]
