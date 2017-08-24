@@ -7,6 +7,7 @@ module Configuration
     , Environment (..)
     , environmentPool
     , makePool
+    , setLogger
     ) where
 
 import Control.Monad.Logger ( runStdoutLoggingT )
@@ -20,6 +21,10 @@ import Control.Monad.Reader ( MonadIO
                             )
 import Database.Persist.Sql ( ConnectionPool )
 import Database.Persist.Sqlite ( createSqlitePool )
+import Network.Wai ( Middleware )
+import Network.Wai.Middleware.RequestLogger ( logStdout
+                                            , logStdoutDev
+                                            )
 import Servant ( ServantErr )
 
 
@@ -44,6 +49,10 @@ data Environment
     = Development
     | Production
     deriving (Eq, Read, Show)
+
+setLogger :: Environment -> Middleware
+setLogger Development = logStdoutDev
+setLogger Production = logStdout
 
 makePool :: Environment -> IO ConnectionPool
 makePool Development = runStdoutLoggingT $ createSqlitePool "sqlite.db" (environmentPool Development)
