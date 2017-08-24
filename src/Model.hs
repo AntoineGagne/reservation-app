@@ -15,10 +15,18 @@ module Model
     , SortReservationBy (..)
     ) where
 
+import Control.Monad.Reader ( MonadIO
+                            , MonadReader
+                            , asks
+                            , liftIO
+                            )
 import Data.Aeson ( defaultOptions )
 import Data.Aeson.TH ( deriveJSON
                      , Options (..)
                      )
+import Database.Persist.Sql ( SqlPersistT
+                            , runSqlPool
+                            )
 import Database.Persist.TH ( mkMigrate
                            , mkPersist
                            , persistLowerCase
@@ -28,8 +36,13 @@ import Database.Persist.TH ( mkMigrate
 import Data.Text ( Text )
 import Data.Time ( UTCTime )
 
+import Configuration ( Configuration (..) )
 import Utils ( formatJsonField )
 
+
+data SortReservationBy = Month
+                       | Week
+                       | Year
 
 share [mkPersist sqlSettings, mkMigrate "migrateAll"] [persistLowerCase|
 Calendar
@@ -67,6 +80,7 @@ $(deriveJSON defaultOptions { fieldLabelModifier = formatJsonField "calendar" } 
 $(deriveJSON defaultOptions { fieldLabelModifier = formatJsonField "user" } ''User)
 $(deriveJSON defaultOptions { fieldLabelModifier = formatJsonField "reservation" } ''Reservation)
 
-data SortReservationBy = Month
-                       | Week
-                       | Year
+runDatabase :: (MonadReader Configuration m, MonadIO m) => SqlPersistT IO b -> m b
+runDatabase query = do
+    pool <- asks getPool
+    liftIO $ runSqlPool query pool
