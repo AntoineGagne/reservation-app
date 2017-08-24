@@ -14,8 +14,7 @@ import Database.Persist.Sql ( ConnectionPool
                             )
 import Data.Time ( UTCTime )
 import Network.Wai ( Application )
-import Network.Wai.Handler.Warp ( run
-                                )
+import Network.Wai.Handler.Warp ( run )
 import Servant ( Capture
                , Delete
                , Get
@@ -28,6 +27,7 @@ import Servant ( Capture
                , Server
                , (:<|>)
                , (:>)
+               , (:~>)
                , serve
                )
 
