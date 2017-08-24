@@ -7,22 +7,32 @@ module Lib
     , app
     ) where
 
+import Control.Monad.Except ( ExceptT )
+import Control.Monad.Reader ( ReaderT
+                            , runReaderT
+                            )
+import Control.Monad.Reader.Class
 import Data.Time ( UTCTime )
+import Database.Persist.Sqlite ( Entity (..) )
 import Network.Wai ( Application )
 import Network.Wai.Handler.Warp ( run )
 import Servant ( Capture
                , Delete
                , Get
+               , Handler (..)
                , JSON
                , PostCreated
                , Proxy (..)
                , Put
                , QueryParam
                , ReqBody
+               , ServantErr (..)
                , Server
-               , (:<|>)
+               , ServerT (..)
+               , (:<|>) (..)
                , (:>)
-               , (:~>)
+               , (:~>) (..)
+               , enter
                , serve
                )
 
@@ -31,21 +41,23 @@ import Model ( Calendar
              , SortReservationBy
              , User (..)
              )
+import Configuration ( Configuration (..) )
+import qualified Configuration as C
 
 
-type API = "users" :> Get '[JSON] [User]
+type API = UserEndpoint :<|> CalendarEndpoint
 
 type UserEndpoint
-    = "users" :> Capture "userid" :> Get '[JSON] User
+    = "users" :> Capture "userid" :> Get '[JSON] (Entity User)
 
 type CalendarEndpoint
-    = "calendars" :> (    Get '[JSON] [Calendar]
-                     :<|> ReqBody '[JSON] Calendar :> PostCreated '[JSON] [Calendar]
-                     :<|> Delete '[JSON] [Calendar]
+    = "calendars" :> (    Get '[JSON] [Entity Calendar]
+                     :<|> ReqBody '[JSON] Calendar :> PostCreated '[JSON] [Entity Calendar]
+                     :<|> Delete '[JSON] [Entity Calendar]
                      :<|> Capture "calendarid" Integer :>
-                         (    Get '[JSON] (Maybe Calendar)
-                         :<|> ReqBody '[JSON] Calendar :> Put '[JSON] Calendar
-                         :<|> Delete '[JSON] Calendar
+                         (    Get '[JSON] (Maybe (Entity Calendar))
+                         :<|> ReqBody '[JSON] Calendar :> Put '[JSON] (Entity Calendar)
+                         :<|> Delete '[JSON] (Entity Calendar)
                          :<|> ReservationEndpoint
                          )
                      )
@@ -53,40 +65,38 @@ type CalendarEndpoint
 type ReservationEndpoint
     = "reservation" :> ( QueryParam "min-time" UTCTime :> QueryParam "max-time" UTCTime 
                                                        :> QueryParam "sortby" SortReservationBy
-                                                       :> Get '[JSON] [Reservation]
-                       :<|> ReqBody '[JSON] Reservation :> PostCreated '[JSON] [Reservation]
+                                                       :> Get '[JSON] [Entity Reservation]
+                       :<|> ReqBody '[JSON] Reservation :> PostCreated '[JSON] [Entity Reservation]
                        :<|> Capture "reservationid" Integer :>
-                           (    Get '[JSON] (Maybe Reservation)
-                           :<|> ReqBody '[JSON] Reservation :> Put '[JSON] Reservation
-                           :<|> Delete '[JSON] Reservation
+                           (    Get '[JSON] (Maybe (Entity Reservation))
+                           :<|> ReqBody '[JSON] Reservation :> Put '[JSON] (Entity Reservation)
+                           :<|> Delete '[JSON] (Entity Reservation)
                            )
                        )
 
-startApp :: IO ()
-startApp = run 8080 app
+app :: Configuration -> Application
+app configuration = serve api $ appToServer configuration
 
-app :: Application
-app = serve api server
+appToServer :: Configuration -> Server API
+appToServer configuration = enter (convertApp configuration) server
+
+convertApp :: Configuration -> C.Application :~> ExceptT ServantErr IO
+convertApp configuration = NT $ flip runReaderT configuration . C.runApp
 
 api :: Proxy API
 api = Proxy
 
-server :: Server API
-server = return users
+server :: ServerT API C.Application
+server = userServer :<|> calendarServer
 
-calendarServer :: Server CalendarEndpoint
+calendarServer :: ServerT CalendarEndpoint C.Application
 calendarServer = undefined
-    where
-        getCalendars :: IO [User]
-        getCalendars = undefined
 
-reservationServer :: Server ReservationEndpoint
+getCalendars :: C.Application [Entity Calendar]
+getCalendars = undefined
+
+reservationServer :: ServerT ReservationEndpoint C.Application
 reservationServer = undefined
 
-userServer :: Server UserEndpoint
+userServer :: ServerT UserEndpoint C.Application
 userServer = undefined
-
-users :: [User]
-users = [ User "Isaac" "Newton" "isaac.newton@physicist.org"
-        , User "Albert" "Einstein" "albert.einstein@physicist.org"
-        ]
