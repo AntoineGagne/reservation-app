@@ -13,16 +13,29 @@ import Database.Persist.Sql ( ConnectionPool
                             , runSqlPersistMPool
                             )
 import Data.Time ( UTCTime )
-import Network.Wai
-import Network.Wai.Handler.Warp
-import Servant
+import Network.Wai ( Application )
+import Network.Wai.Handler.Warp ( run
+                                )
+import Servant ( Capture
+               , Delete
+               , Get
+               , JSON
+               , PostCreated
+               , Proxy (..)
+               , Put
+               , QueryParam
+               , ReqBody
+               , Server
+               , (:<|>)
+               , (:>)
+               , serve
+               )
 
 import Model ( Calendar
              , Reservation
              , SortReservationBy
              , User (..)
              )
-import Utils ( formatJsonField )
 
 
 type API = "users" :> Get '[JSON] [User]
