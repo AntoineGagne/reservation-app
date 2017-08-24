@@ -7,11 +7,6 @@ module Lib
     , app
     ) where
 
-import Data.Aeson
-import Data.Aeson.TH
-import Database.Persist.Sql ( ConnectionPool
-                            , runSqlPersistMPool
-                            )
 import Data.Time ( UTCTime )
 import Network.Wai ( Application )
 import Network.Wai.Handler.Warp ( run )
