@@ -45,12 +45,12 @@ import Configuration ( Configuration (..) )
 import qualified Configuration as C
 
 
-type API = UserEndpoint :<|> CalendarEndpoint
+type API = UserAPI :<|> CalendarAPI
 
-type UserEndpoint
+type UserAPI
     = "users" :> Capture "userid" :> Get '[JSON] (Entity User)
 
-type CalendarEndpoint
+type CalendarAPI
     = "calendars" :> (    Get '[JSON] [Entity Calendar]
                      :<|> ReqBody '[JSON] Calendar :> PostCreated '[JSON] [Entity Calendar]
                      :<|> Delete '[JSON] [Entity Calendar]
@@ -58,11 +58,11 @@ type CalendarEndpoint
                          (    Get '[JSON] (Maybe (Entity Calendar))
                          :<|> ReqBody '[JSON] Calendar :> Put '[JSON] (Entity Calendar)
                          :<|> Delete '[JSON] (Entity Calendar)
-                         :<|> ReservationEndpoint
+                         :<|> ReservationAPI
                          )
                      )
 
-type ReservationEndpoint
+type ReservationAPI
     = "reservation" :> ( QueryParam "min-time" UTCTime :> QueryParam "max-time" UTCTime 
                                                        :> QueryParam "sortby" SortReservationBy
                                                        :> Get '[JSON] [Entity Reservation]
@@ -80,23 +80,23 @@ app configuration = serve api $ appToServer configuration
 appToServer :: Configuration -> Server API
 appToServer configuration = enter (convertApp configuration) server
 
-convertApp :: Configuration -> C.Application :~> ExceptT ServantErr IO
-convertApp configuration = NT $ flip runReaderT configuration . C.runApp
+convertApp :: Configuration -> C.Application :~> Handler
+convertApp configuration = NT $ Handler . flip runReaderT configuration . C.runApp
 
 api :: Proxy API
 api = Proxy
 
 server :: ServerT API C.Application
-server = userServer :<|> calendarServer
+server = undefined
 
-calendarServer :: ServerT CalendarEndpoint C.Application
+calendarServer :: ServerT CalendarAPI C.Application
 calendarServer = undefined
 
 getCalendars :: C.Application [Entity Calendar]
 getCalendars = undefined
 
-reservationServer :: ServerT ReservationEndpoint C.Application
+reservationServer :: ServerT ReservationAPI C.Application
 reservationServer = undefined
 
-userServer :: ServerT UserEndpoint C.Application
+userServer :: ServerT UserAPI C.Application
 userServer = undefined
