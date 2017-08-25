@@ -14,7 +14,7 @@ formatJsonField :: String -> String -> String
 formatJsonField p = toSnakeCase . stripPrefix p
 
 toSnakeCase :: String -> String
-toSnakeCase s = case concatMap f s of
+toSnakeCase s = case f =<< s of
                     ('_':xs) -> xs
                     xs -> xs
     where 
