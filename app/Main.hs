@@ -14,6 +14,9 @@ import Configuration ( Configuration (..)
                      )
 import Model ( doMigrations )
 
+-- Taken mostly from
+-- http://www.parsonsmatt.org/2016/07/08/servant-persistent_updated.html
+-- (Fri Aug 25 16:12:40 EDT 2017)
 main :: IO ()
 main = do
     environment <- lookupSetting "ENVIRONMENT" Development
