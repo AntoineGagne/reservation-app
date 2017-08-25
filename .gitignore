@@ -53,3 +53,5 @@ tags
 
 # End of https://www.gitignore.io/api/vim,haskell,linux
 
+# SQLite
+*.db*

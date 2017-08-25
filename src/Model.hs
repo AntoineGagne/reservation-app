@@ -13,6 +13,8 @@ module Model
     , Reservation (..)
     , User (..)
     , SortReservationBy (..)
+    , doMigrations
+    , runDatabase
     ) where
 
 import Control.Monad.Reader ( MonadIO
@@ -26,6 +28,7 @@ import Data.Aeson.TH ( deriveJSON
                      )
 import Database.Persist.Sql ( SqlPersistT
                             , runSqlPool
+                            , runMigration
                             )
 import Database.Persist.TH ( mkMigrate
                            , mkPersist
@@ -79,6 +82,9 @@ UserReservation
 $(deriveJSON defaultOptions { fieldLabelModifier = formatJsonField "calendar" } ''Calendar)
 $(deriveJSON defaultOptions { fieldLabelModifier = formatJsonField "user" } ''User)
 $(deriveJSON defaultOptions { fieldLabelModifier = formatJsonField "reservation" } ''Reservation)
+
+doMigrations :: SqlPersistT IO ()
+doMigrations = runMigration migrateAll
 
 runDatabase :: (MonadReader Configuration m, MonadIO m) => SqlPersistT IO b -> m b
 runDatabase query = do
