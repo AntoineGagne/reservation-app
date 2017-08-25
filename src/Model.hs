@@ -1,5 +1,6 @@
 {-# LANGUAGE EmptyDataDecls #-}
 {-# LANGUAGE FlexibleContexts #-}
+{-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE GADTs #-}
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
@@ -43,24 +44,24 @@ import Utils ( formatJsonField )
 
 
 share [mkPersist sqlSettings, mkMigrate "migrateAll"] [persistLowerCase|
-Calendar
+Calendar json
     name Text
     description Text Maybe default=NULL
     deriving Eq Show
 
-User
+User json
   firstName Text
   lastName Text
   email Text
   UniqueEmail email
   deriving Eq Show
 
-UserCalendar
+UserCalendar json
     owner UserId
     calendar CalendarId
     UniqueUserCalendar owner calendar
 
-Reservation
+Reservation json
     name Text Maybe default=NULL
     description Text Maybe default=NULL
     calendar CalendarId
@@ -68,15 +69,11 @@ Reservation
     endingDate UTCTime
     deriving Eq Show
 
-UserReservation
+UserReservation json
     owner UserId
     reservation ReservationId
     UniqueUserReservation owner reservation
 |]
-
-$(deriveJSON defaultOptions { fieldLabelModifier = formatJsonField "calendar" } ''Calendar)
-$(deriveJSON defaultOptions { fieldLabelModifier = formatJsonField "user" } ''User)
-$(deriveJSON defaultOptions { fieldLabelModifier = formatJsonField "reservation" } ''Reservation)
 
 doMigrations :: SqlPersistT IO ()
 doMigrations = runMigration migrateAll

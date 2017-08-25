@@ -41,4 +41,3 @@ lookupSetting environment defaultValue = do
                             , ")] for environment variable "
                             , environment
                             ]
-
