@@ -3,8 +3,7 @@
 {-# LANGUAGE TypeOperators #-}
 
 module Lib
-    ( startApp
-    , app
+    ( app
     ) where
 
 import Control.Monad.Except ( ExceptT )
@@ -45,7 +44,8 @@ import Configuration ( Configuration (..) )
 import qualified Configuration as C
 
 
-type API = UserAPI :<|> CalendarAPI
+type API = "test" :> Get '[JSON] [Int]
+-- type API = UserAPI :<|> CalendarAPI
 
 type UserAPI
     = "users" :> Capture "userid" :> Get '[JSON] (Entity User)
