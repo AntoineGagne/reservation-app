@@ -12,7 +12,6 @@ module Model
     ( Calendar (..)
     , Reservation (..)
     , User (..)
-    , SortReservationBy (..)
     , doMigrations
     , runDatabase
     ) where
@@ -42,10 +41,6 @@ import Data.Time ( UTCTime )
 import Configuration ( Configuration (..) )
 import Utils ( formatJsonField )
 
-
-data SortReservationBy = Month
-                       | Week
-                       | Year
 
 share [mkPersist sqlSettings, mkMigrate "migrateAll"] [persistLowerCase|
 Calendar

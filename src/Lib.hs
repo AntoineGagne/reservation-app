@@ -37,40 +37,38 @@ import Servant ( Capture
 
 import Model ( Calendar
              , Reservation
-             , SortReservationBy
              , User (..)
              )
 import Configuration ( Configuration (..) )
 import qualified Configuration as C
 
 
-type API = "test" :> Get '[JSON] [Int]
--- type API = UserAPI :<|> CalendarAPI
+-- type API = "test" :> Get '[JSON] [Int]
+type API = UserAPI :<|> CalendarAPI
 
 type UserAPI
-    = "users" :> Capture "userid" :> Get '[JSON] (Entity User)
+    = "users" :> Capture "userid" Integer :> Get '[JSON] User
 
 type CalendarAPI
-    = "calendars" :> (    Get '[JSON] [Entity Calendar]
-                     :<|> ReqBody '[JSON] Calendar :> PostCreated '[JSON] [Entity Calendar]
-                     :<|> Delete '[JSON] [Entity Calendar]
+    = "calendars" :> (    Get '[JSON] [Calendar]
+                     :<|> ReqBody '[JSON] Calendar :> PostCreated '[JSON] [Calendar]
+                     :<|> Delete '[JSON] [Calendar]
                      :<|> Capture "calendarid" Integer :>
-                         (    Get '[JSON] (Maybe (Entity Calendar))
-                         :<|> ReqBody '[JSON] Calendar :> Put '[JSON] (Entity Calendar)
-                         :<|> Delete '[JSON] (Entity Calendar)
+                         (    Get '[JSON] (Maybe Calendar)
+                         :<|> ReqBody '[JSON] Calendar :> Put '[JSON] Calendar
+                         :<|> Delete '[JSON] Calendar
                          :<|> ReservationAPI
                          )
                      )
 
 type ReservationAPI
     = "reservation" :> ( QueryParam "min-time" UTCTime :> QueryParam "max-time" UTCTime 
-                                                       :> QueryParam "sortby" SortReservationBy
-                                                       :> Get '[JSON] [Entity Reservation]
-                       :<|> ReqBody '[JSON] Reservation :> PostCreated '[JSON] [Entity Reservation]
+                                                       :> Get '[JSON] [Reservation]
+                       :<|> ReqBody '[JSON] Reservation :> PostCreated '[JSON] [Reservation]
                        :<|> Capture "reservationid" Integer :>
-                           (    Get '[JSON] (Maybe (Entity Reservation))
-                           :<|> ReqBody '[JSON] Reservation :> Put '[JSON] (Entity Reservation)
-                           :<|> Delete '[JSON] (Entity Reservation)
+                           (    Get '[JSON] (Maybe Reservation)
+                           :<|> ReqBody '[JSON] Reservation :> Put '[JSON] Reservation
+                           :<|> Delete '[JSON] Reservation
                            )
                        )
 
@@ -92,7 +90,7 @@ server = undefined
 calendarServer :: ServerT CalendarAPI C.Application
 calendarServer = undefined
 
-getCalendars :: C.Application [Entity Calendar]
+getCalendars :: C.Application [Calendar]
 getCalendars = undefined
 
 reservationServer :: ServerT ReservationAPI C.Application
