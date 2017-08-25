@@ -12,16 +12,16 @@ import qualified Utils
 
 
 main :: IO ()
-main = mapM_ hspec [utilsSpec, spec]
+main = mapM_ hspec [utilsSpec]
 
-spec :: Spec
-spec = with (return app) $ parallel $
-    describe "GET /users" $ do
-        it "responds with 200" $
-            get "/users" `shouldRespondWith` 200
-        it "responds with [User]" $ do
-            let users = "[{\"first_name\":\"Isaac\",\"last_name\":\"Newton\",\"email\":\"isaac.newton@physicist.org\"},{\"first_name\":\"Albert\",\"last_name\":\"Einstein\",\"email\":\"albert.einstein@physicist.org\"}]"
-            get "/users" `shouldRespondWith` users
+-- spec :: Spec
+-- spec = with (return app) $ parallel $
+--     describe "GET /users" $ do
+--         it "responds with 200" $
+--             get "/users" `shouldRespondWith` 200
+--         it "responds with [User]" $ do
+--             let users = "[{\"first_name\":\"Isaac\",\"last_name\":\"Newton\",\"email\":\"isaac.newton@physicist.org\"},{\"first_name\":\"Albert\",\"last_name\":\"Einstein\",\"email\":\"albert.einstein@physicist.org\"}]"
+--             get "/users" `shouldRespondWith` users
 
 calendarRoutesSpec :: Spec
 calendarRoutesSpec = undefined
