@@ -43,7 +43,6 @@ import Configuration ( Configuration (..) )
 import qualified Configuration as C
 
 
--- type API = "test" :> Get '[JSON] [Int]
 type API = UserAPI :<|> CalendarAPI
 
 type UserAPI
