@@ -47,9 +47,11 @@ main = do
 
 calendarRoutesSpec :: Application -> Spec
 calendarRoutesSpec application = with (pure application) $ do
-    describe "GET /calendars" $
+    describe "GET /calendars" $ do
         it "responds with 200" $
             get "/calendars" `shouldRespondWith` 200
+        it "responds with 404 when no calendar with the given ID can be found" $
+            get "/calendars/1001" `shouldRespondWith` 404
     describe "DELETE /calendars" $
         it "responds with 404 when no calendar with the given ID can be found" $
             delete "/calendars/1001" `shouldRespondWith` 404
