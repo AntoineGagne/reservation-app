@@ -58,7 +58,7 @@ import qualified Configuration as C
 type API = UserAPI :<|> CalendarAPI :<|> ReservationAPI
 
 type UserAPI
-    = "users" :> Capture "userid" Integer :> Get '[JSON] User
+    = "users" :> Capture "userid" Integer :> Get '[JSON] (Entity User)
 
 type CalendarAPI
     = "calendars" :> (    Get '[JSON] [Entity Calendar]
@@ -96,7 +96,7 @@ api :: Proxy API
 api = Proxy
 
 server :: ServerT API C.Application
-server = undefined
+server = userServer :<|> calendarServer :<|> reservationServer
 
 calendarServer :: ServerT CalendarAPI C.Application
 calendarServer = getCalendars
@@ -150,7 +150,18 @@ deleteCalendar k = do
         calendarId = toCalendarId k
 
 userServer :: ServerT UserAPI C.Application
-userServer = undefined
+userServer = getUser
+
+getUser :: Integer -> C.Application (Entity User)
+getUser k = do
+    maybeUser <- runDatabase . get $ userId
+    case maybeUser of
+        Just user -> pure $ Entity userId user
+        Nothing -> throwError err404
+    where
+        userId = toUserId k
+        toUserId :: Integer -> Key User
+        toUserId = toSqlKey . fromIntegral
 
 reservationServer :: ServerT ReservationAPI C.Application
 reservationServer = undefined
