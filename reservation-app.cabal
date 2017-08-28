@@ -23,11 +23,11 @@ library
                      , Utils
   build-depends:       base >= 4.7 && < 5
                      , aeson
+                     , monad-logger
+                     , mtl
                      , persistent
                      , persistent-sqlite
                      , persistent-template
-                     , monad-logger
-                     , mtl
                      , servant-server
                      , text
                      , time
@@ -53,10 +53,19 @@ test-suite reservation-app-test
   main-is:             Spec.hs
   build-depends:       base
                      , aeson
+                     , bytestring
+                     , case-insensitive
+                     , mtl
+                     , persistent
+                     , persistent-sqlite
                      , hspec
                      , hspec-wai
                      , hspec-wai-json
                      , reservation-app
+                     , servant-server
+                     , wai
+                     , wai-extra
+                     , warp
   ghc-options:         -threaded -rtsopts -with-rtsopts=-N
   default-language:    Haskell2010
 

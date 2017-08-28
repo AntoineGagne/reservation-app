@@ -10,7 +10,9 @@ module Configuration
     , setLogger
     ) where
 
-import Control.Monad.Logger ( runStdoutLoggingT )
+import Control.Monad.Logger ( runStdoutLoggingT
+                            , runNoLoggingT
+                            )
 import Control.Monad.Except ( ExceptT
                             , MonadError
                             , liftIO
@@ -48,16 +50,20 @@ data Configuration
 data Environment
     = Development
     | Production
+    | Test
     deriving (Eq, Read, Show)
 
 setLogger :: Environment -> Middleware
 setLogger Development = logStdoutDev
 setLogger Production = logStdout
+setLogger Test = id
 
 makePool :: Environment -> IO ConnectionPool
 makePool Development = runStdoutLoggingT $ createSqlitePool "sqlite.db" (environmentPool Development)
 makePool Production = runStdoutLoggingT $ createSqlitePool "sqlite.db" (environmentPool Production)
+makePool Test = runNoLoggingT $ createSqlitePool "sqlite-test.db" (environmentPool Test)
 
 environmentPool :: Environment -> Int
 environmentPool Development = 1
 environmentPool Production = 8
+environmentPool Test = 1
