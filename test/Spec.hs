@@ -6,7 +6,7 @@ import Test.Hspec
 import Test.Hspec.Wai
 import Test.Hspec.Wai.JSON
 
-import Lib (app)
+import Api (app)
 
 import qualified Utils
 

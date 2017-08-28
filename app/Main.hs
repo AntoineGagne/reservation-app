@@ -6,7 +6,7 @@ import Network.Wai.Handler.Warp ( run )
 import Safe ( readMay )
 import System.Environment ( lookupEnv )
 
-import Lib ( app )
+import Api ( app )
 import Configuration ( Configuration (..)
                      , Environment (..)
                      , makePool
