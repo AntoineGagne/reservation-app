@@ -11,7 +11,6 @@ import Control.Monad.Reader ( ReaderT
                             , runReaderT
                             )
 import Control.Monad.Reader.Class
-import Data.Int ( Int64 (..) )
 import Data.Time ( UTCTime )
 import Database.Persist.Sql ( delete
                             , get
@@ -46,12 +45,20 @@ import Servant ( Capture
                , throwError
                )
 
+import Calendar ( deleteCalendar
+                , getCalendar
+                , getCalendars
+                , insertCalendar
+                , replaceCalendar
+                )
+import Configuration ( Configuration (..) )
 import Model ( Calendar
              , Reservation
              , User (..)
              , runDatabase
              )
-import Configuration ( Configuration (..) )
+import User ( getUser )
+
 import qualified Configuration as C
 
 
@@ -107,61 +114,8 @@ calendarServer = getCalendars
                         :<|> replaceCalendar calendarid
                         :<|> deleteCalendar calendarid
 
-getCalendars :: C.Application [Entity Calendar]
-getCalendars = runDatabase $ selectList [] []
-
-insertCalendar :: Calendar -> C.Application (Entity Calendar)
-insertCalendar calendar = do
-    calendarId <- runDatabase $ insert calendar
-    pure $ Entity calendarId calendar
-
-getCalendar :: Integer -> C.Application (Entity Calendar)
-getCalendar k = do
-    maybeCalendar <- runDatabase . get $ calendarId
-    case maybeCalendar of
-        Just calendar -> pure $ Entity calendarId calendar
-        Nothing -> throwError err404
-    where
-        calendarId = toCalendarId k
-
-toCalendarId :: Integer -> Key Calendar
-toCalendarId = toSqlKey . fromIntegral
-
-replaceCalendar :: Integer -> Calendar -> C.Application (Entity Calendar)
-replaceCalendar k calendar = do
-    exists <- runDatabase . get $ calendarId
-    case exists of
-        Just _ -> do
-            runDatabase $ replace calendarId calendar
-            pure $ Entity calendarId calendar
-        Nothing -> throwError err404
-    where
-        calendarId = toCalendarId k
-
-deleteCalendar :: Integer -> C.Application (Entity Calendar)
-deleteCalendar k = do
-    maybeCalendar <- runDatabase . get $ calendarId
-    case maybeCalendar of
-        Just calendar -> do
-            runDatabase . delete $ calendarId
-            pure $ Entity calendarId calendar
-        Nothing -> throwError err404
-    where
-        calendarId = toCalendarId k
-
 userServer :: ServerT UserAPI C.Application
 userServer = getUser
-
-getUser :: Integer -> C.Application (Entity User)
-getUser k = do
-    maybeUser <- runDatabase . get $ userId
-    case maybeUser of
-        Just user -> pure $ Entity userId user
-        Nothing -> throwError err404
-    where
-        userId = toUserId k
-        toUserId :: Integer -> Key User
-        toUserId = toSqlKey . fromIntegral
 
 reservationServer :: ServerT ReservationAPI C.Application
 reservationServer = undefined
